@@ -1,0 +1,71 @@
+CREATE DATABASE [Service]
+GO
+USE [Service]
+GO
+
+CREATE TABLE Users(
+	Id INT IDENTITY,
+	Username NVARCHAR(30) NOT NULL,
+	[Password] NVARCHAR(50) NOT NULL,
+	[Name] NVARCHAR(50),
+	Birthdate DATETIME,
+	Age INT,
+	Email VARCHAR(50) NOT NULL,
+
+	CONSTRAINT PK_UsersId PRIMARY KEY (Id),
+	CONSTRAINT UQ_Users_Username UNIQUE (Username),
+	CONSTRAINT CK_CheckAge CHECK (Age BETWEEN 14 AND 110)
+)
+
+CREATE TABLE Departments(
+	Id INT IDENTITY,
+	[Name] NVARCHAR(50) NOT NULL,
+
+	CONSTRAINT PK_DepartmentsId PRIMARY KEY (Id)
+)
+
+CREATE TABLE Employees(
+	Id INT IDENTITY,
+	FirstName NVARCHAR(25),
+	LastName NVARCHAR(25),
+	Birthdate DATETIME,
+	Age INT,
+	DepartmentId INT,
+
+	CONSTRAINT PK_Employees PRIMARY KEY (Id),
+	CONSTRAINT CK_CheckAgeEmp CHECK (Age BETWEEN 14 AND 110),
+	CONSTRAINT FK_EmployeesDepId_DepartmentId FOREIGN KEY (DepartmentId) REFERENCES Departments(Id)
+)
+
+CREATE TABLE Categories(
+	Id INT IDENTITY,
+	[Name] NVARCHAR(50) NOT NULL,
+	DepartmentId INT NOT NULL,
+
+	CONSTRAINT PK_Categories PRIMARY KEY (Id),
+	CONSTRAINT FK_CategoriesDepId_DepartmentId FOREIGN KEY (DepartmentId) REFERENCES Departments(Id)
+)
+
+CREATE TABLE [Status](
+	Id INT IDENTITY,
+	[Label] NVARCHAR(30) NOT NULL,
+
+	CONSTRAINT PK_Status PRIMARY KEY (Id)
+)
+
+CREATE TABLE Reports(
+	Id INT IDENTITY,
+	CategoryId INT NOT NULL,
+	StatusId INT NOT NULL,
+	OpenDate DATETIME NOT NULL,
+	CloseDate DATETIME,
+	[Description] NVARCHAR(200) NOT NULL,
+	UserId INT NOT NULL,
+	EmployeeId INT,
+
+	CONSTRAINT PK_Report PRIMARY KEY (Id),
+	CONSTRAINT FK_Report_Category FOREIGN KEY (CategoryId) REFERENCES Categories(Id),
+	CONSTRAINT FK_Report_Status FOREIGN KEY (StatusId) REFERENCES [Status](Id),
+	CONSTRAINT FK_Report_Users FOREIGN KEY (UserId) REFERENCES Users(Id),
+	CONSTRAINT FK_Report_Employees FOREIGN KEY (EmployeeId) REFERENCES Employees(Id)
+)
